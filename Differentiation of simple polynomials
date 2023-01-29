@@ -1,0 +1,57 @@
+def differentiate(equation, point):
+    temp = ""
+    arr = []
+    for char in equation:
+        if ((char!="+") and (char!="-")):
+            temp+=char
+        else:
+            if (char=="-"):
+                arr.append(temp)
+                temp="-"
+            else:
+                arr.append(temp)
+                temp=""
+    arr.append(temp)
+    for part in arr:
+        if (part==""):
+            arr.remove(part)
+    arr = arr[::-1]
+    total=0
+    for part in arr:
+        if ("x" not in part):
+            pass
+        elif (("x" in part) and ("^" not in part)):
+            coefficient = part[:-1]
+            if coefficient == "-":
+                coefficient = -1
+            elif coefficient == "":
+                coefficient = 1
+            else:
+                coefficient = int(coefficient)
+            total += coefficient
+        else:
+            numbers="0123456789"
+            reversepart = part[::-1]
+            power = ""
+            i = 0
+            while (reversepart[i] in numbers):
+                power+=reversepart[i]
+                i+=1
+            power = int(power[::-1])
+            coefficient = ""
+            i=0
+            while ((part[i]=="-") or (part[i] in numbers)):
+                coefficient+=part[i]
+                i+=1
+            if (coefficient == "-"):
+                coefficient = -1
+            elif (coefficient == ""):
+                coefficient = 1
+            else:
+                coefficient = int(coefficient)
+            coefficient*=power
+            power-=1
+            total+=(coefficient*(point**power))
+    print(equation)
+    print(point)
+    return total
