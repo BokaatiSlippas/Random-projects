@@ -1,0 +1,21 @@
+import math
+
+def intermediate(row):
+    converter = {"RR":"R","GG":"G","BB":"B","RG":"B","RB":"G","GB":"R","GR":"B","BR":"G","BG":"R"}
+    otherconverter = {"R":0, "G":1, "B":2}
+    n = len(row)
+    if n==1:
+        value = row
+    elif n==2:
+        value = converter[row]
+    else:
+        index = n-3**(int(math.log((n-1),3)))
+        value = converter[intermediate(row[:index]) + intermediate(row[-index:])]
+    return value
+
+def triangle(row):
+    #R=0
+    #G=1
+    #B=2
+    #equation is (-1)^n-1 k=1 to n sigma (n-1 k-1) binomial ak
+    final = intermediate(row)
