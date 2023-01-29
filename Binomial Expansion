@@ -1,0 +1,97 @@
+def pascalrow(n):
+    line = [1]
+    for k in range(max(n ,0)):
+        line.append(int(line[k]*(n-k)/(k+1)))
+    return line
+
+def expand(expr):
+    co_a = ""
+    sign_of_number = ""
+    letters = "abcdefghijklmnopqrstuvwxyz"
+    numbers = "0123456789"
+    check = False
+    number=""
+    power = ""
+    for i in range(0,len(expr)):
+        if expr[i] in letters:
+            co_a = (expr[1:i])
+            if len(co_a) == 0:
+                co_a = "1"
+            letter = expr[i]
+            check = True
+        elif (expr[i] in numbers) and (check==True):
+            sign_of_number = expr[i-1]
+            j = i
+            check=False
+            while expr[j] in numbers:
+                number += expr[j]
+                j+=1
+        elif expr[i]=="^":
+            k = i+1
+            try:
+                while expr[k] in numbers:
+                    power+=expr[k]
+                    k+=1
+            except:
+                break
+    if co_a!="-":
+        co_a = int(co_a)
+    else:
+        co_a = -1
+    number = int(number)
+    if sign_of_number=="-":
+        number = -1*number
+    power = int(power)
+    astart = power
+    bstart = 0
+    coefficients = pascalrow(power)
+    text = ""
+    for coefficient in coefficients:
+        if ((astart==0) and (bstart==0)):
+            return "1"
+        if ((bstart==0) and (astart!=0)):
+            if ((astart%2==0) and (abs(co_a) != co_a)):
+                text+=str((co_a**astart)*-1)+letter+"^"+str(astart)+"+"
+            else:
+                text+=str(co_a**astart)+letter+"^"+str(astart)+"+"
+            astart-=1
+            bstart+=1
+        elif ((astart==0) and (bstart!=0)):
+            if (bstart%2==0 and (abs(number) != number)):
+                text+=str((number**bstart)*-1)
+            else:
+                text+=str(number**bstart)
+        else:
+            if ((abs(co_a) != co_a) and (astart%2==0) and (abs(number) == number)):
+                text+=str(((co_a**astart)*(number**bstart))*coefficient)+letter+"^"+str(astart)+"+"
+            elif ((abs(co_a) == co_a) and (bstart%2==0) and (abs(number) != number)):
+                text+=str(((co_a**astart)*(number**bstart))*coefficient*-1)+letter+"^"+str(astart)+"+"
+            else:
+                text+=str((co_a**astart)*(number**bstart)*coefficient)+letter+"^"+str(astart)+"+"
+            astart-=1
+            bstart+=1
+
+    final = ""
+    for i in range(0,len(text)):
+        if not ((text[i]=="+") and (text[i+1]=="-")):
+            final+=text[i]
+    power1 = final.rfind("^")
+    final = final[:power1]+final[power1+2:]
+    for i in range(0,len(final)-2):
+        if ((final[i]=="1") and (final[i+1]==letter)):
+            if (final[i-1] not in numbers):
+                final = final[:i]+final[i+1:]
+    if ((final[0]=="1") and (final[1] not in numbers)):
+        final = final[1:]
+    print(final)
+    print(coefficients)
+    print(co_a)
+    print(letter)
+    print(sign_of_number)
+    print(number)
+    print(power)
+    
+
+
+if __name__=="__main__":
+    expand("(-3x+2)^3")
