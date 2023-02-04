@@ -1,0 +1,142 @@
+#20 by 20 array where the 0 index for both axis is unused for simplficiation purposes and 
+#Odd indexes for dots, Even indexes for line connections
+#Basically 9 by 9 Grid in terms of usability
+class Player():
+  def __init__(self, Name, Points):
+    self.Name = Name
+    self.Points = Points
+  def Increment(self):
+    self.Points+=1
+    print(f"{self.Name} now has {self.Points} points.")
+
+
+def CreateBoard():
+  Board = [["X","1","X","2","X","3","X","4","X","5","X","6","X","7","X","8","X","9","X","⑩"],["1","."," ","."," ","."," ","."," ","."," ","."," ","."," ","."," ","."," ","."],["X"," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "],["2","."," ","."," ","."," ","."," ","."," ","."," ","."," ","."," ","."," ","."],["X"," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "],["3","."," ","."," ","."," ","."," ","."," ","."," ","."," ","."," ","."," ","."],["X"," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "],["4","."," ","."," ","."," ","."," ","."," ","."," ","."," ","."," ","."," ","."],["X"," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "],["5","."," ","."," ","."," ","."," ","."," ","."," ","."," ","."," ","."," ","."],["X"," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "],["6","."," ","."," ","."," ","."," ","."," ","."," ","."," ","."," ","."," ","."],["X"," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "],["7","."," ","."," ","."," ","."," ","."," ","."," ","."," ","."," ","."," ","."],["X"," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "],["8","."," ","."," ","."," ","."," ","."," ","."," ","."," ","."," ","."," ","."],["X"," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "],["9","."," ","."," ","."," ","."," ","."," ","."," ","."," ","."," ","."," ","."],["X"," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "],["⑩","."," ","."," ","."," ","."," ","."," ","."," ","."," ","."," ","."," ","."]]
+  return Board
+
+
+def DisplayBoard(Board):
+  text = ""
+  for y in range(0,20):
+    line = ""
+    for x in range(0,20):
+      line+=Board[y][x]
+    text+=(line+"\n")
+  print(text)
+
+
+def BoardEditor(Board, Change):
+  if Change[2]==True:
+    Board[(Change[0])][(Change[1])] = "―"
+  else:
+    Board[(Change[0])][(Change[1])] = "|"
+  return Board
+
+#Odd y's check for ―
+#Even y's check for |
+def BoxChecker(Board):#CHECK
+  Box = False
+  x = 2
+  y = 1
+  for i in range(0,81):
+    if x == 20:
+      x = 2
+      y+=2
+    if (Board[y][x] == "―") and (Board[y+2][x] == "―") and (Board[y+1][x-1] == "|") and (Board[y+1][x+1] == "|"):
+      Box = True
+    x+=2
+  return Box
+
+#Change has the inputs in terms of the rows and columns they want to connect
+#Change also has a 3rd index for a horizontal status
+def TakeInputs():
+  Change=[]
+  FirstRow = int(input("Enter the first row: "))
+  while FirstRow>10:
+    FirstRow = int(input("Enter the first row: "))
+  FirstColumn = int(input("Enter the first column: "))
+  while FirstColumn>10:
+    FirstColumn = int(input("Enter the first column: "))
+  SecondRow = int(input("Enter the second row: "))
+  while SecondRow>10:
+    SecondRow = int(input("Enter the second row: "))
+  SecondColumn = int(input("Enter the second column: "))
+  while SecondColumn>10:
+    SecondColumn = int(input("Enter the second column: "))
+  if ((abs(FirstRow-SecondRow)==1) ^ (abs(FirstColumn-SecondColumn)==1)) == False:
+    print("Chosen rows and columns have to be directly next to each other horizontally or vertically!!!")
+    TakeInputs()
+  if (FirstRow == SecondRow and FirstColumn == SecondColumn):
+    print("Can't draw line to the same point!!!")
+    TakeInputs()
+  else:
+    if FirstRow == SecondRow:
+      Change.append((FirstRow*2)-1)
+      if FirstColumn<SecondColumn:
+        Change.append(FirstColumn*2)
+      else:
+        Change.append(SecondColumn*2)
+      Change.append(True)
+    else:
+      if FirstRow<SecondRow:
+        Change.append(FirstRow*2)
+      else:
+        Change.append(SecondRow*2)
+      Change.append((FirstColumn*2)-1)
+      Change.append(False)
+  return Change
+
+
+def State(Board):
+  valid = True
+  x = 2
+  y = 1
+  for i in range(0,81):
+    if x == 20:
+      x = 2
+      y+=2
+    if (Board[y][x] != "―") or (Board[y+2][x] != "―") or (Board[y+1][x-1] != "|") or (Board[y+1][x+1] != "|"):
+      valid = False
+    x+=2
+  return valid
+
+
+def Game(Board, First, Second):
+  FirstPlayer = True
+  while State(Board)==False:
+    if FirstPlayer == True:
+      print(f"It is {First.Name}'s turn.\n")
+      DisplayBoard(Board)
+      Change = TakeInputs()
+      Board = BoardEditor(Board, Change)
+      if BoxChecker(Board)==True:
+        First.Increment()
+      else:
+        FirstPlayer = False
+    else:
+      print(f"It is {Second.Name}'s turn.\n")
+      DisplayBoard(Board)
+      Change = TakeInputs()
+      Board = BoardEditor(Board, Change)
+      if BoxChecker(Board)==True:
+        Second.Increment()
+      else:
+        FirstPlayer = True
+  DisplayBoard(Board)
+  if ((First.Points)>(Second.Points)):
+    print(f"Winner is {First.Name} by {(First.Points)-(Second.Points)} points.")
+  else:
+    print(f"Winner is {Second.Name} by {(Second.Points)-(First.Points)} points.")
+
+
+def Instantiations():
+  Name = input("Enter the first player's name: ")
+  First = Player(Name, 0)
+  Name = input("Enter the second player's name: ")
+  Second = Player(Name, 0)
+  return First, Second
+
+if __name__ == "__main__":
+  First, Second = Instantiations()
+  Board = CreateBoard()
+  Game(Board, First, Second)
